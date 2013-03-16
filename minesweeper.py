@@ -15,6 +15,7 @@ class Minesweeper:
         self.tile_clicked = PhotoImage(file = "images/tile_clicked.gif")
         self.tile_mine = PhotoImage(file = "images/tile_mine.gif")
         self.tile_flag = PhotoImage(file = "images/tile_flag.gif")
+        self.tile_wrong = PhotoImage(file = "images/tile_wrong.gif")
 
         # set up frame
         frame = Frame(master)
@@ -63,10 +64,13 @@ class Minesweeper:
 
     def lclicked(self, button_data):
         if button_data[1] == 1: #if a mine
-            # show all mines
+            # show all mines and check for flags
             for key in self.buttons:
-                if self.buttons[key][1] == 1:
+                if self.buttons[key][1] != 1 and self.buttons[key][2] == 2:
+                    self.buttons[key][0].config(image = self.tile_wrong)
+                if self.buttons[key][1] == 1 and self.buttons[key][2] != 2:
                     self.buttons[key][0].config(image = self.tile_mine)
+                    
             # end game
             self.gameover()
         else:
