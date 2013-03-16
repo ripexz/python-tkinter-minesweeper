@@ -16,11 +16,15 @@ class Minesweeper:
         self.tile_mine = PhotoImage(file = "images/tile_mine.gif")
         self.tile_flag = PhotoImage(file = "images/tile_flag.gif")
         self.tile_wrong = PhotoImage(file = "images/tile_wrong.gif")
+        self.tile_no = []
+        for x in range(1, 9):
+            self.tile_no.append(PhotoImage(file = "images/tile_"+str(x)+".gif"))
 
         # set up frame
         frame = Frame(master)
         frame.pack()
 
+        # show "Minesweeper" at the top
         self.label1 = Label(frame, text="Minesweeper")
         self.label1.grid(row = 0, column = 0, columnspan = 10)
 
@@ -98,10 +102,11 @@ class Minesweeper:
 
 ### END OF CLASSES ###
 
+# create Tk widget
 root = Tk()
-
+# set program title
 root.title("Minesweeper")
-
+# create game instance
 minesweeper = Minesweeper(root)
-
+# run event loop
 root.mainloop()
