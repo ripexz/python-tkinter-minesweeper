@@ -14,6 +14,7 @@ class Minesweeper:
         self.tile_plain = PhotoImage(file = "images/tile_plain.gif")
         self.tile_clicked = PhotoImage(file = "images/tile_clicked.gif")
         self.tile_mine = PhotoImage(file = "images/tile_mine.gif")
+        self.tile_flag = PhotoImage(file = "images/tile_flag.gif")
 
         # set up frame
         frame = Frame(master)
@@ -26,11 +27,17 @@ class Minesweeper:
         self.buttons = dict({})
         for x in range(0, 100):
             mine = 0
+            ### gfx reassignable for debugging purposes
             gfx = self.tile_plain
+            # currently random amount of mines
             if random.uniform(0.0, 1.0) < 0.2:
                 mine = 1
-                gfx = self.tile_mine
-            self.buttons[x] = [ Button(frame, image = gfx, command = self.clicked_factory(x)), mine ]
+            # 0 = Button
+            # 1 = if a mine y/n (1/0)
+            # 2 = state (0 = unclicked, 1 = clicked, 2 = flagged)
+            self.buttons[x] = [ Button(frame, image = gfx), mine, 0 ]
+            self.buttons[x][0].bind('<Button-1>', self.lclicked_wrapper(x))
+            self.buttons[x][0].bind('<Button-3>', self.rclicked_wrapper(x))
         
         # lay buttons in grid
         x = 1
@@ -42,14 +49,30 @@ class Minesweeper:
                 y = 0
                 x += 1
 
-    def clicked_factory(self, x):
-        return lambda: self.clicked(self.buttons[x])
+    def lclicked_wrapper(self, x):
+        return lambda Button: self.lclicked(self.buttons[x])
 
-    def clicked(self, button_data):
+    def rclicked_wrapper(self, x):
+        return lambda Button: self.rclicked(self.buttons[x])
+
+    def lclicked(self, button_data):
         if button_data[1] == 1: #if a mine
+            # show all mines
+            for key in self.buttons:
+                if self.buttons[key][1] == 1:
+                    self.buttons[key][0].config(image = self.tile_mine)
+            # end game
             self.gameover()
         else:
-            button_data[0].config( image = self.tile_clicked )
+            #change image and state
+            button_data[0].config(image = self.tile_clicked)
+            button_data[2] = 1
+
+    def rclicked(self, button_data):
+        # if not clicked
+        if button_data[2] == 0:
+            button_data[0].config(image = self.tile_flag)
+            button_data[2] = 2
 
     def gameover(self):
         tkMessageBox.showinfo("Game Over", "You Lose!")
