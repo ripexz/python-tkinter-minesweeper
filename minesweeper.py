@@ -25,13 +25,15 @@ class Minesweeper:
 
         # create buttons
         self.buttons = dict({})
+        mines = 0
         for x in range(0, 100):
             mine = 0
             ### gfx reassignable for debugging purposes
             gfx = self.tile_plain
             # currently random amount of mines
-            if random.uniform(0.0, 1.0) < 0.2:
+            if random.uniform(0.0, 1.0) < 0.1:
                 mine = 1
+                mines += 1
             # 0 = Button
             # 1 = if a mine y/n (1/0)
             # 2 = state (0 = unclicked, 1 = clicked, 2 = flagged)
@@ -48,6 +50,10 @@ class Minesweeper:
             if y == 10:
                 y = 0
                 x += 1
+
+        #add mine count at the end
+        self.label2 = Label(frame, text="Mines: "+str(mines))
+        self.label2.grid(row = 11, column = 0, columnspan = 10)
 
     def lclicked_wrapper(self, x):
         return lambda Button: self.lclicked(self.buttons[x])
