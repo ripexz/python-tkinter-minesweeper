@@ -38,7 +38,8 @@ class Minesweeper:
             # 0 = Button
             # 1 = if a mine y/n (1/0)
             # 2 = state (0 = unclicked, 1 = clicked, 2 = flagged)
-            self.buttons[x] = [ Button(frame, image = gfx), mine, 0 ]
+            # 3 = button id
+            self.buttons[x] = [ Button(frame, image = gfx), mine, 0, x ]
             self.buttons[x][0].bind('<Button-1>', self.lclicked_wrapper(x))
             self.buttons[x][0].bind('<Button-3>', self.rclicked_wrapper(x))
         
@@ -83,6 +84,12 @@ class Minesweeper:
         if button_data[2] == 0:
             button_data[0].config(image = self.tile_flag)
             button_data[2] = 2
+            button_data[0].unbind('<Button-1>')
+        # if flagged, unflag
+        elif button_data[2] == 2:
+            button_data[0].config(image = self.tile_plain)
+            button_data[2] = 0
+            button_data[0].bind('<Button-1>', self.lclicked_wrapper(button_data[3]))
 
     def gameover(self):
         tkMessageBox.showinfo("Game Over", "You Lose!")
