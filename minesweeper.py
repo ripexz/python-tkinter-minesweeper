@@ -4,7 +4,6 @@
 from Tkinter import *
 import tkMessageBox
 import random
-import sys
 
 class Minesweeper:
 
