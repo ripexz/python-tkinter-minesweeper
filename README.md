@@ -1,4 +1,4 @@
-Python Tkinter Minesweeper v0.2
+Python Tkinter Minesweeper v0.2.3
 ===========================
 
 Minesweeper game written in Python using Tkinter GUI library.
@@ -14,7 +14,6 @@ To Do:
 ----------
 - Clear all nearby tiles with 0 mine counter when a non-mine tile is clicked
 - Have specific number of mines, rather than random
-- Flag counter
 - Time counter
 - Highscore table
 - Adjustable grid and mine count
