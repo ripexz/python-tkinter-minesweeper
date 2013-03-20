@@ -24,7 +24,7 @@ class Minesweeper:
         frame.pack()
 
         # show "Minesweeper" at the top
-        self.label1 = Label(frame, text="Minesweeper")
+        self.label1 = Label(frame, text="ProMinesweeper")
         self.label1.grid(row = 0, column = 0, columnspan = 10)
 
         # create flag and clicked tile variables
