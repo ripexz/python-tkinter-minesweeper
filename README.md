@@ -13,6 +13,7 @@ Contents:
 To Do:
 ----------
 - Clear all nearby tiles with 0 mine counter when a non-mine tile is clicked
+- Clean up that terrible code.
 - Have specific number of mines, rather than random
 - Time counter
 - Highscore table
