@@ -73,84 +73,53 @@ class Minesweeper:
         # find nearby mines and display number on tile
         for key in self.buttons:
             nearby_mines = 0
-            # if not at edges
-            if self.buttons[key][4][0] != 1 and self.buttons[key][4][0] != 10 \
-            and self.buttons[key][4][1] != 0 and self.buttons[key][4][1] != 9:
+            try:
                 if self.buttons[key-9][1] == 1:     #top right
                     nearby_mines += 1
-                if self.buttons[key-10][1] == 1:    #top middle
-                    nearby_mines += 1
-                if self.buttons[key-11][1] == 1:    #top left
-                    nearby_mines += 1
-                if self.buttons[key-1][1] == 1:     #left
-                    nearby_mines += 1
-                if self.buttons[key+1][1] == 1:     #right
-                    nearby_mines += 1
-                if self.buttons[key+9][1] == 1:     #bottom left
-                    nearby_mines += 1
-                if self.buttons[key+10][1] == 1:    #bottom middle
-                    nearby_mines += 1
-                if self.buttons[key+11][1] == 1:    #bottom right
-                    nearby_mines += 1
+            except KeyError:
+                pass
 
-            # if top row:
-            if self.buttons[key][4][0] == 1:
-                if self.buttons[key+10][1] == 1:    #bottom middle
-                    nearby_mines += 1
-                # if not top left
-                if self.buttons[key][4][1] != 0:
-                    if self.buttons[key-1][1] == 1:     #left
-                        nearby_mines += 1
-                    if self.buttons[key+9][1] == 1:     #bottom left
-                        nearby_mines += 1
-                # if not top right
-                if self.buttons[key][4][1] != 9:
-                    if self.buttons[key+1][1] == 1:     #right
-                        nearby_mines += 1
-                    if self.buttons[key+11][1] == 1:    #bottom right
-                        nearby_mines += 1
-            # if bottom row:
-            if self.buttons[key][4][0] == 10:
+            try:
                 if self.buttons[key-10][1] == 1:    #top middle
-                    nearby_mines += 1
-                # if not bottom left
-                if self.buttons[key][4][1] != 0:
-                    if self.buttons[key-1][1] == 1:     #left
-                        nearby_mines += 1
-                    if self.buttons[key-11][1] == 1:    #top left
-                        nearby_mines += 1
-                # if not top right
-                if self.buttons[key][4][1] != 9:
-                    if self.buttons[key+1][1] == 1:     #right
-                        nearby_mines += 1
-                    if self.buttons[key-9][1] == 1:     #top right
-                        nearby_mines += 1
-            # if left side but not top or bottom:
-            if self.buttons[key][4][1] == 0 and self.buttons[key][4][0] != 1 \
-                                            and self.buttons[key][4][0] != 10:
-                if self.buttons[key-10][1] == 1:    #top middle
-                    nearby_mines += 1
-                if self.buttons[key-9][1] == 1:     #top right
-                    nearby_mines += 1
-                if self.buttons[key+1][1] == 1:     #right
-                    nearby_mines += 1
-                if self.buttons[key+11][1] == 1:    #bottom right
-                    nearby_mines += 1
-                if self.buttons[key+10][1] == 1:    #bottom middle
-                    nearby_mines += 1
-            # if right side but not top or bottom:
-            if self.buttons[key][4][1] == 9 and self.buttons[key][4][0] != 1 \
-                                            and self.buttons[key][4][0] != 10:
-                if self.buttons[key-10][1] == 1:    #top middle
-                    nearby_mines += 1
+                   nearby_mines += 1
+            except KeyError:
+                pass
+            
+            try:
                 if self.buttons[key-11][1] == 1:    #top left
                     nearby_mines += 1
+            except KeyError:
+                pass
+            
+            try:
                 if self.buttons[key-1][1] == 1:     #left
                     nearby_mines += 1
+            except KeyError:
+                pass
+
+            try:
+                if self.buttons[key+1][1] == 1:     #right
+                    nearby_mines += 1
+            except KeyError:
+                pass
+
+            try:
                 if self.buttons[key+9][1] == 1:     #bottom left
                     nearby_mines += 1
+            except KeyError:
+                pass
+
+            try:
                 if self.buttons[key+10][1] == 1:    #bottom middle
                     nearby_mines += 1
+            except KeyError:
+                pass
+
+            try:
+                if self.buttons[key+11][1] == 1:    #bottom right
+                    nearby_mines += 1
+            except KeyError:
+                pass
 
             # store mine count in button data list
             self.buttons[key][5] = nearby_mines
@@ -228,11 +197,16 @@ class Minesweeper:
 
 ### END OF CLASSES ###
 
-# create Tk widget
-root = Tk()
-# set program title
-root.title("Minesweeper")
-# create game instance
-minesweeper = Minesweeper(root)
-# run event loop
-root.mainloop()
+def main():
+    global root
+    # create Tk widget
+    root = Tk()
+    # set program title
+    root.title("Minesweeper")
+    # create game instance
+    minesweeper = Minesweeper(root)
+    # run event loop
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
