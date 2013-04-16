@@ -1,7 +1,12 @@
-Python Tkinter Minesweeper v0.2.4
+Python Tkinter Minesweeper v0.5
 ===========================
 
 Minesweeper game written in Python using Tkinter GUI library.
+
+Known bugs:
+----------
+- Tiles cleared from nearby "clean" areas if there is only one mine in between
+- Occasionally mine numbers are displayed incorrectly (1 above actual) at the edges
 
 Contents:
 ----------
@@ -12,7 +17,8 @@ Contents:
 
 To Do:
 ----------
-- Clear all nearby tiles with 0 mine counter when a non-mine tile is clicked
+- Fix bugs
+- Clean up duplicate code
 - Have specific number of mines, rather than random
 - Time counter
 - Highscore table

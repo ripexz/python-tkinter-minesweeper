@@ -4,6 +4,7 @@
 from Tkinter import *
 import tkMessageBox
 import random
+from collections import deque
 
 class Minesweeper:
 
@@ -45,7 +46,7 @@ class Minesweeper:
             if random.uniform(0.0, 1.0) < 0.1:
                 mine = 1
                 self.mines += 1
-            # 0 = Button
+            # 0 = Button widget
             # 1 = if a mine y/n (1/0)
             # 2 = state (0 = unclicked, 1 = clicked, 2 = flagged)
             # 3 = button id
@@ -73,56 +74,27 @@ class Minesweeper:
         # find nearby mines and display number on tile
         for key in self.buttons:
             nearby_mines = 0
-            try:
-                if self.buttons[key-9][1] == 1:     #top right
-                    nearby_mines += 1
-            except KeyError:
-                pass
-
-            try:
-                if self.buttons[key-10][1] == 1:    #top middle
-                   nearby_mines += 1
-            except KeyError:
-                pass
-            
-            try:
-                if self.buttons[key-11][1] == 1:    #top left
-                    nearby_mines += 1
-            except KeyError:
-                pass
-            
-            try:
-                if self.buttons[key-1][1] == 1:     #left
-                    nearby_mines += 1
-            except KeyError:
-                pass
-
-            try:
-                if self.buttons[key+1][1] == 1:     #right
-                    nearby_mines += 1
-            except KeyError:
-                pass
-
-            try:
-                if self.buttons[key+9][1] == 1:     #bottom left
-                    nearby_mines += 1
-            except KeyError:
-                pass
-
-            try:
-                if self.buttons[key+10][1] == 1:    #bottom middle
-                    nearby_mines += 1
-            except KeyError:
-                pass
-
-            try:
-                if self.buttons[key+11][1] == 1:    #bottom right
-                    nearby_mines += 1
-            except KeyError:
-                pass
-
+            if self.check_for_mines(key-9):
+                nearby_mines += 1
+            if self.check_for_mines(key-10):
+                nearby_mines += 1
+            if self.check_for_mines(key-11):
+                nearby_mines += 1
+            if self.check_for_mines(key-1):
+                nearby_mines += 1
+            if self.check_for_mines(key+1):
+                nearby_mines += 1
+            if self.check_for_mines(key+9):
+                nearby_mines += 1
+            if self.check_for_mines(key+10):
+                nearby_mines += 1
+            if self.check_for_mines(key+11):
+                nearby_mines += 1
             # store mine count in button data list
             self.buttons[key][5] = nearby_mines
+            #if self.buttons[key][1] != 1:
+            #    if nearby_mines != 0:
+            #        self.buttons[key][0].config(image = self.tile_no[nearby_mines-1])
 
         #add mine and count at the end
         self.label2 = Label(frame, text = "Mines: "+str(self.mines))
@@ -130,6 +102,15 @@ class Minesweeper:
 
         self.label3 = Label(frame, text = "Flags: "+str(self.flags))
         self.label3.grid(row = 11, column = 4, columnspan = 5)
+
+    ## End of __init__
+
+    def check_for_mines(self, key):
+        try:
+            if self.buttons[key][1] == 1:
+                return True
+        except KeyError:
+            pass
 
     def lclicked_wrapper(self, x):
         return lambda Button: self.lclicked(self.buttons[x])
@@ -151,12 +132,14 @@ class Minesweeper:
             #change image
             if button_data[5] == 0:
                 button_data[0].config(image = self.tile_clicked)
+                self.clear_empty_tiles(button_data[3])
             else:
                 button_data[0].config(image = self.tile_no[button_data[5]-1])
             # if not already set as clicked, change state and count
             if button_data[2] != 1:
                 button_data[2] = 1
                 self.clicked += 1
+            print self.clicked
             if self.clicked == 100 - self.mines:
                 self.victory()
 
@@ -182,6 +165,33 @@ class Minesweeper:
             self.flags -= 1
             self.update_flags()
 
+    def check_tile(self, key, queue):
+        try:
+            if self.buttons[key][2] == 0:
+                if self.buttons[key][5] == 0:
+                    self.buttons[key][0].config(image = self.tile_clicked)
+                    queue.append(key)
+                else:
+                    self.buttons[key][0].config(image = self.tile_no[self.buttons[key][5]-1])
+                self.buttons[key][2] = 1
+                self.clicked += 1
+        except KeyError:
+            pass
+
+    def clear_empty_tiles(self, main_key):
+        queue = deque([main_key])
+
+        while len(queue) != 0:
+            key = queue.popleft()
+            self.check_tile(key-9, queue)      #top right
+            self.check_tile(key-10, queue)     #top middle
+            self.check_tile(key-11, queue)     #top left
+            self.check_tile(key-1, queue)      #left
+            self.check_tile(key+1, queue)      #right
+            self.check_tile(key+9, queue)      #bottom right
+            self.check_tile(key+10, queue)     #bottom middle
+            self.check_tile(key+11, queue)     #bottom left
+    
     def gameover(self):
         tkMessageBox.showinfo("Game Over", "You Lose!")
         global root
