@@ -139,7 +139,6 @@ class Minesweeper:
             if button_data[2] != 1:
                 button_data[2] = 1
                 self.clicked += 1
-            print self.clicked
             if self.clicked == 100 - self.mines:
                 self.victory()
 

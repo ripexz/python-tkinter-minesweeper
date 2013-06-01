@@ -1,4 +1,4 @@
-Python Tkinter Minesweeper v0.5
+Python Tkinter Minesweeper v0.5.1
 ===========================
 
 Minesweeper game written in Python using Tkinter GUI library.
