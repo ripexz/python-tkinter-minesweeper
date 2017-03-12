@@ -7,7 +7,8 @@ import random
 from collections import deque
 
 class Minesweeper:
-
+    
+    # function that runs the game
     def __init__(self, master):
 
         # import images
@@ -104,7 +105,8 @@ class Minesweeper:
         self.label3.grid(row = 11, column = 4, columnspan = 5)
 
     ## End of __init__
-
+        
+    # function that checks whether or not a mine is in place
     def check_for_mines(self, key):
         try:
             if self.buttons[key][1] == 1:
@@ -112,14 +114,17 @@ class Minesweeper:
         except KeyError:
             pass
 
+    # function determines what a left click does
     def lclicked_wrapper(self, x):
         return lambda Button: self.lclicked(self.buttons[x])
 
     def rclicked_wrapper(self, x):
         return lambda Button: self.rclicked(self.buttons[x])
 
+    # function determines what a left click does (mine checking)
     def lclicked(self, button_data):
-        if button_data[1] == 1: #if a mine
+        #if a mine
+        if button_data[1] == 1: 
             # show all mines and check for flags
             for key in self.buttons:
                 if self.buttons[key][1] != 1 and self.buttons[key][2] == 2:
@@ -129,7 +134,7 @@ class Minesweeper:
             # end game
             self.gameover()
         else:
-            #change image
+            #show the empty tiles cleared
             if button_data[5] == 0:
                 button_data[0].config(image = self.tile_clicked)
                 self.clear_empty_tiles(button_data[3])
@@ -141,29 +146,31 @@ class Minesweeper:
                 self.clicked += 1
             if self.clicked == 100 - self.mines:
                 self.victory()
-
+                
+    # function determines what a right click does (mine flagging)
     def rclicked(self, button_data):
-        # if not clicked
+        # if the tile hasn't already been clicked
         if button_data[2] == 0:
             button_data[0].config(image = self.tile_flag)
             button_data[2] = 2
             button_data[0].unbind('<Button-1>')
-            # if a mine
+            # if tiles is a mine
             if button_data[1] == 1:
                 self.correct_flags += 1
             self.flags += 1
             self.update_flags()
-        # if flagged, unflag
+        # if tile is flagged, unflag
         elif button_data[2] == 2:
             button_data[0].config(image = self.tile_plain)
             button_data[2] = 0
             button_data[0].bind('<Button-1>', self.lclicked_wrapper(button_data[3]))
-            # if a mine
+            # if tile is a mine
             if button_data[1] == 1:
                 self.correct_flags -= 1
             self.flags -= 1
             self.update_flags()
 
+    #function checks the state of a given tile
     def check_tile(self, key, queue):
         try:
             if self.buttons[key][2] == 0:
@@ -176,7 +183,7 @@ class Minesweeper:
                 self.clicked += 1
         except KeyError:
             pass
-
+    # function clears tiles checked and determined empty
     def clear_empty_tiles(self, main_key):
         queue = deque([main_key])
 
@@ -190,17 +197,18 @@ class Minesweeper:
             self.check_tile(key+9, queue)      #bottom right
             self.check_tile(key+10, queue)     #bottom middle
             self.check_tile(key+11, queue)     #bottom left
-    
+            
+    # function runs if player clicks a mine
     def gameover(self):
         tkMessageBox.showinfo("Game Over", "You Lose!")
         global root
         root.destroy()
-
+    #function runs if player clears all tiles free of mines
     def victory(self):
         tkMessageBox.showinfo("Game Over", "You Win!")
         global root
         root.destroy()
-
+    # function keeps track of flagged tiles
     def update_flags(self):
         self.label3.config(text = "Flags: "+str(self.flags))
 
@@ -217,5 +225,6 @@ def main():
     # run event loop
     root.mainloop()
 
+# running the game
 if __name__ == "__main__":
     main()
