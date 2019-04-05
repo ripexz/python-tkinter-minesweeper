@@ -1,8 +1,8 @@
 # Python Version 2.7.3
 # File: minesweeper.py
 
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+from tkinter import messagebox as tkMessageBox
 import random
 from collections import deque
 
@@ -66,7 +66,7 @@ class Minesweeper:
             if y_coord == 10:
                 y_coord = 0
                 x_coord += 1
-        
+
         # lay buttons in grid
         for key in self.buttons:
             self.buttons[key][0].grid( row = self.buttons[key][4][0], column = self.buttons[key][4][1] )
@@ -190,7 +190,7 @@ class Minesweeper:
             self.check_tile(key+9, queue)      #bottom right
             self.check_tile(key+10, queue)     #bottom middle
             self.check_tile(key+11, queue)     #bottom left
-    
+
     def gameover(self):
         tkMessageBox.showinfo("Game Over", "You Lose!")
         global root
