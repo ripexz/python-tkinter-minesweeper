@@ -3,9 +3,10 @@
 
 from tkinter import *
 from tkinter import messagebox as tkMessageBox
+from collections import deque
 import random
 import platform
-from collections import deque
+import time
 
 STATE_DEFAULT = 0
 STATE_CLICKED = 1
@@ -120,13 +121,6 @@ class Minesweeper:
 
     def lclicked(self, button_data):
         if button_data["isMine"] == True:
-            # show all mines and check for flags
-            for x in range(0, 10):
-                for y in range (0, 10):
-                    if self.buttons[x][y]["isMine"] == False and self.buttons[x][y]["state"] == STATE_FLAGGED:
-                        self.buttons[x][y]["widget"].config(image = self.tiles["wrong"])
-                    if self.buttons[x][y]["isMine"] == True and self.buttons[x][y]["state"] != STATE_FLAGGED:
-                        self.buttons[x][y]["widget"].config(image = self.tiles["mine"])
             # end game
             self.gameover()
         else:
@@ -197,13 +191,21 @@ class Minesweeper:
             self.check_tile(source_x+1, source_y+1, queue)     #bottom left
 
     def gameover(self):
-        tkMessageBox.showinfo("Game Over", "You Lose!")
+        for x in range(0, 10):
+            for y in range (0, 10):
+                if self.buttons[x][y]["isMine"] == False and self.buttons[x][y]["state"] == STATE_FLAGGED:
+                    self.buttons[x][y]["widget"].config(image = self.tiles["wrong"])
+                if self.buttons[x][y]["isMine"] == True and self.buttons[x][y]["state"] != STATE_FLAGGED:
+                    self.buttons[x][y]["widget"].config(image = self.tiles["mine"])
         global root
+        root.update()
+        tkMessageBox.showinfo("Game Over", "You Lose!")
         root.destroy()
 
     def victory(self):
-        tkMessageBox.showinfo("Game Over", "You Win!")
         global root
+        root.update()
+        tkMessageBox.showinfo("Game Over", "You Win!")
         root.destroy()
 
     def update_flags(self):
