@@ -101,10 +101,10 @@ class Minesweeper:
 
         #add mine and count at the end
         self.label2 = Label(frame, text = "Mines: "+str(self.mines))
-        self.label2.grid(row = 11, column = 0, columnspan = 5)
+        self.label2.grid(row = SIZE_X+1, column = 0, columnspan = SIZE_Y/2)
 
         self.label3 = Label(frame, text = "Flags: "+str(self.flags))
-        self.label3.grid(row = 11, column = 4, columnspan = 5)
+        self.label3.grid(row = SIZE_X+1, column = SIZE_Y/2-1, columnspan = SIZE_Y/2)
 
     ## End of __init__
 
@@ -153,7 +153,7 @@ class Minesweeper:
         elif button_data["state"] == 2:
             button_data["widget"].config(image = self.tiles["plain"])
             button_data["state"] = 0
-            button_data["widget"].bind(BTN_CLICK, self.lclicked_wrapper(button_data["coords"][x], button_data["coords"][y]))
+            button_data["widget"].bind(BTN_CLICK, self.lclicked_wrapper(button_data["coords"]["x"], button_data["coords"]["y"]))
             # if a mine
             if button_data["isMine"] == True:
                 self.correct_flags -= 1
@@ -191,7 +191,7 @@ class Minesweeper:
             self.check_tile(source_x+1, source_y, queue)    #bottom middle
             self.check_tile(source_x+1, source_y+1, queue)  #bottom left
 
-    def gameover(self):
+    def reveal(self):
         for x in range(0, SIZE_X):
             for y in range(0, SIZE_Y):
                 if self.buttons[x][y]["isMine"] == False and self.buttons[x][y]["state"] == STATE_FLAGGED:
@@ -200,12 +200,15 @@ class Minesweeper:
                     self.buttons[x][y]["widget"].config(image = self.tiles["mine"])
         global root
         root.update()
+
+    def gameover(self):
+        self.reveal()
         tkMessageBox.showinfo("Game Over", "You Lose!")
+        global root
         root.destroy()
 
     def victory(self):
-        global root
-        root.update()
+        self.reveal()
         tkMessageBox.showinfo("Game Over", "You Win!")
         root.destroy()
 
