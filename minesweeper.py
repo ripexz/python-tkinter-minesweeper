@@ -1,24 +1,34 @@
 # Python Version 2.7.3
 # File: minesweeper.py
 
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+from tkinter import messagebox as tkMessageBox
 import random
+import platform
 from collections import deque
+
+STATE_DEFAULT = 0
+STATE_CLICKED = 1
+STATE_FLAGGED = 2
+
+BTN_CLICK = "<Button-1>"
+BTN_FLAG = "<Button-2>" if platform.system() == 'Darwin' else "<Button-3>"
 
 class Minesweeper:
 
     def __init__(self, master):
 
         # import images
-        self.tile_plain = PhotoImage(file = "images/tile_plain.gif")
-        self.tile_clicked = PhotoImage(file = "images/tile_clicked.gif")
-        self.tile_mine = PhotoImage(file = "images/tile_mine.gif")
-        self.tile_flag = PhotoImage(file = "images/tile_flag.gif")
-        self.tile_wrong = PhotoImage(file = "images/tile_wrong.gif")
-        self.tile_no = []
+        self.tiles = {
+            "plain": PhotoImage(file = "images/tile_plain.gif"),
+            "clicked": PhotoImage(file = "images/tile_clicked.gif"),
+            "mine": PhotoImage(file = "images/tile_mine.gif"),
+            "flag": PhotoImage(file = "images/tile_flag.gif"),
+            "wrong": PhotoImage(file = "images/tile_wrong.gif"),
+            "numbers": []
+        }
         for x in range(1, 9):
-            self.tile_no.append(PhotoImage(file = "images/tile_"+str(x)+".gif"))
+            self.tiles["numbers"].append(PhotoImage(file = "images/tile_"+str(x)+".gif"))
 
         # set up frame
         frame = Frame(master)
@@ -39,37 +49,40 @@ class Minesweeper:
         x_coord = 1
         y_coord = 0
         for x in range(0, 100):
-            mine = 0
+            isMine = 0
+
             # tile image changeable for debug reasons:
-            gfx = self.tile_plain
+            gfx = self.tiles["plain"]
+
             # currently random amount of mines
             if random.uniform(0.0, 1.0) < 0.1:
-                mine = 1
+                isMine = 1
                 self.mines += 1
-            # 0 = Button widget
-            # 1 = if a mine y/n (1/0)
-            # 2 = state (0 = unclicked, 1 = clicked, 2 = flagged)
-            # 3 = button id
-            # 4 = [x, y] coordinates in the grid
-            # 5 = nearby mines, 0 by default, calculated after placement in grid
-            self.buttons[x] = [ Button(frame, image = gfx),
-                                mine,
-                                0,
-                                x,
-                                [x_coord, y_coord],
-                                0 ]
-            self.buttons[x][0].bind('<Button-1>', self.lclicked_wrapper(x))
-            self.buttons[x][0].bind('<Button-3>', self.rclicked_wrapper(x))
 
-            # calculate coords:
+            self.buttons[x] = {
+                "id": x,
+                "isMine": isMine,
+                "state": STATE_DEFAULT,
+                "coords": {
+                    "x": x_coord,
+                    "y": y_coord
+                },
+                "widget": Button(frame, image = gfx),
+                "mines": 0 # calculated after placement in grid
+            }
+
+            self.buttons[x]["widget"].bind(BTN_CLICK, self.lclicked_wrapper(x))
+            self.buttons[x]["widget"].bind(BTN_FLAG, self.rclicked_wrapper(x))
+
+            # calculate coords for next loop:
             y_coord += 1
             if y_coord == 10:
                 y_coord = 0
                 x_coord += 1
-        
+
         # lay buttons in grid
         for key in self.buttons:
-            self.buttons[key][0].grid( row = self.buttons[key][4][0], column = self.buttons[key][4][1] )
+            self.buttons[key]["widget"].grid( row = self.buttons[key]["coords"]["x"], column = self.buttons[key]["coords"]["y"] )
 
         # find nearby mines and display number on tile
         for key in self.buttons:
@@ -91,10 +104,10 @@ class Minesweeper:
             if self.check_for_mines(key+11):
                 nearby_mines += 1
             # store mine count in button data list
-            self.buttons[key][5] = nearby_mines
-            #if self.buttons[key][1] != 1:
+            self.buttons[key]["mines"] = nearby_mines
+            #if self.buttons[key]["isMine"] != 1:
             #    if nearby_mines != 0:
-            #        self.buttons[key][0].config(image = self.tile_no[nearby_mines-1])
+            #        self.buttons[key]["widget"].config(image = self.tiles["numbers"][nearby_mines-1])
 
         #add mine and count at the end
         self.label2 = Label(frame, text = "Mines: "+str(self.mines))
@@ -107,7 +120,7 @@ class Minesweeper:
 
     def check_for_mines(self, key):
         try:
-            if self.buttons[key][1] == 1:
+            if self.buttons[key]["isMine"] == 1:
                 return True
         except KeyError:
             pass
@@ -119,60 +132,60 @@ class Minesweeper:
         return lambda Button: self.rclicked(self.buttons[x])
 
     def lclicked(self, button_data):
-        if button_data[1] == 1: #if a mine
+        if button_data["isMine"] == 1:
             # show all mines and check for flags
             for key in self.buttons:
-                if self.buttons[key][1] != 1 and self.buttons[key][2] == 2:
-                    self.buttons[key][0].config(image = self.tile_wrong)
-                if self.buttons[key][1] == 1 and self.buttons[key][2] != 2:
-                    self.buttons[key][0].config(image = self.tile_mine)
+                if self.buttons[key]["isMine"] == 0 and self.buttons[key]["state"] == STATE_FLAGGED:
+                    self.buttons[key]["widget"].config(image = self.tiles["wrong"])
+                if self.buttons[key]["isMine"] == 1 and self.buttons[key]["state"] != STATE_FLAGGED:
+                    self.buttons[key]["widget"].config(image = self.tiles["mine"])
             # end game
             self.gameover()
         else:
-            #change image
-            if button_data[5] == 0:
-                button_data[0].config(image = self.tile_clicked)
-                self.clear_empty_tiles(button_data[3])
+            # change image
+            if button_data["mines"] == 0:
+                button_data["widget"].config(image = self.tiles["clicked"])
+                self.clear_empty_tiles(button_data["id"])
             else:
-                button_data[0].config(image = self.tile_no[button_data[5]-1])
+                button_data["widget"].config(image = self.tiles["numbers"][button_data["mines"]-1])
             # if not already set as clicked, change state and count
-            if button_data[2] != 1:
-                button_data[2] = 1
+            if button_data["state"] != STATE_CLICKED:
+                button_data["state"] = STATE_CLICKED
                 self.clicked += 1
             if self.clicked == 100 - self.mines:
                 self.victory()
 
     def rclicked(self, button_data):
         # if not clicked
-        if button_data[2] == 0:
-            button_data[0].config(image = self.tile_flag)
-            button_data[2] = 2
-            button_data[0].unbind('<Button-1>')
+        if button_data["state"] == STATE_DEFAULT:
+            button_data["widget"].config(image = self.tiles["flag"])
+            button_data["state"] = STATE_FLAGGED
+            button_data["widget"].unbind(BTN_CLICK)
             # if a mine
-            if button_data[1] == 1:
+            if button_data["isMine"] == 1:
                 self.correct_flags += 1
             self.flags += 1
             self.update_flags()
         # if flagged, unflag
-        elif button_data[2] == 2:
-            button_data[0].config(image = self.tile_plain)
-            button_data[2] = 0
-            button_data[0].bind('<Button-1>', self.lclicked_wrapper(button_data[3]))
+        elif button_data["state"] == 2:
+            button_data["widget"].config(image = self.tiles["plain"])
+            button_data["state"] = 0
+            button_data["widget"].bind(BTN_CLICK, self.lclicked_wrapper(button_data["id"]))
             # if a mine
-            if button_data[1] == 1:
+            if button_data["isMine"] == 1:
                 self.correct_flags -= 1
             self.flags -= 1
             self.update_flags()
 
     def check_tile(self, key, queue):
         try:
-            if self.buttons[key][2] == 0:
-                if self.buttons[key][5] == 0:
-                    self.buttons[key][0].config(image = self.tile_clicked)
+            if self.buttons[key]["state"] == STATE_DEFAULT:
+                if self.buttons[key]["mines"] == 0:
+                    self.buttons[key]["widget"].config(image = self.tiles["clicked"])
                     queue.append(key)
                 else:
-                    self.buttons[key][0].config(image = self.tile_no[self.buttons[key][5]-1])
-                self.buttons[key][2] = 1
+                    self.buttons[key]["widget"].config(image = self.tiles["numbers"][self.buttons[key]["mines"]-1])
+                self.buttons[key]["state"] = STATE_CLICKED
                 self.clicked += 1
         except KeyError:
             pass
@@ -190,7 +203,7 @@ class Minesweeper:
             self.check_tile(key+9, queue)      #bottom right
             self.check_tile(key+10, queue)     #bottom middle
             self.check_tile(key+11, queue)     #bottom left
-    
+
     def gameover(self):
         tkMessageBox.showinfo("Game Over", "You Lose!")
         global root
