@@ -8,6 +8,9 @@ import random
 import platform
 import time
 
+SIZE_X = 10
+SIZE_Y = 10
+
 STATE_DEFAULT = 0
 STATE_CLICKED = 1
 STATE_FLAGGED = 2
@@ -47,8 +50,8 @@ class Minesweeper:
         # create buttons
         self.buttons = dict({})
         self.mines = 0
-        for x in range(0, 10):
-            for y in range (0, 10):
+        for x in range(0, SIZE_X):
+            for y in range(0, SIZE_Y):
                 if y == 0:
                     self.buttons[x] = {}
 
@@ -72,7 +75,7 @@ class Minesweeper:
                         "y": y
                     },
                     "widget": Button(frame, image = gfx),
-                    "mines": 0 # calculated after placement in grid
+                    "mines": 0 # calculated after grid is built
                 }
 
                 self.buttons[x][y]["widget"].bind(BTN_CLICK, self.lclicked_wrapper(x, y))
@@ -82,19 +85,17 @@ class Minesweeper:
                 self.buttons[x][y]["widget"].grid( row = x, column = y )
 
         # loop again to find nearby mines and display number on tile
-        for x in range(0, 10):
-            for y in range (0, 10):
+        for x in range(0, SIZE_X):
+            for y in range(0, SIZE_Y):
                 nearby_mines = 0
-                nearby_mines += 1 if self.check_for_mines(x-1, y-1) else 0
-                nearby_mines += 1 if self.check_for_mines(x-1, y) else 0
-                nearby_mines += 1 if self.check_for_mines(x-1, y+1) else 0
-
-                nearby_mines += 1 if self.check_for_mines(x, y-1) else 0
-                nearby_mines += 1 if self.check_for_mines(x, y+1) else 0
-
-                nearby_mines += 1 if self.check_for_mines(x+1, y-1) else 0
-                nearby_mines += 1 if self.check_for_mines(x+1, y) else 0
-                nearby_mines += 1 if self.check_for_mines(x+1, y+1) else 0
+                nearby_mines += 1 if self.check_for_mines(x-1, y-1) else 0  #top right
+                nearby_mines += 1 if self.check_for_mines(x-1, y) else 0    #top middle
+                nearby_mines += 1 if self.check_for_mines(x-1, y+1) else 0  #top left
+                nearby_mines += 1 if self.check_for_mines(x, y-1) else 0    #left
+                nearby_mines += 1 if self.check_for_mines(x, y+1) else 0    #right
+                nearby_mines += 1 if self.check_for_mines(x+1, y-1) else 0  #bottom right
+                nearby_mines += 1 if self.check_for_mines(x+1, y) else 0    #bottom middle
+                nearby_mines += 1 if self.check_for_mines(x+1, y+1) else 0  #bottom left
 
                 self.buttons[x][y]["mines"] = nearby_mines
 
@@ -181,18 +182,18 @@ class Minesweeper:
             source_x = int(parts[0])
             source_y = int(parts[1])
 
-            self.check_tile(source_x-1, source_y-1, queue)      #top right
-            self.check_tile(source_x-1, source_y, queue)     #top middle
-            self.check_tile(source_x-1, source_y+1, queue)     #top left
-            self.check_tile(source_x, source_y-1, queue)      #left
-            self.check_tile(source_x, source_y+1, queue)      #right
-            self.check_tile(source_x+1, source_y-1, queue)      #bottom right
-            self.check_tile(source_x+1, source_y, queue)     #bottom middle
-            self.check_tile(source_x+1, source_y+1, queue)     #bottom left
+            self.check_tile(source_x-1, source_y-1, queue)  #top right
+            self.check_tile(source_x-1, source_y, queue)    #top middle
+            self.check_tile(source_x-1, source_y+1, queue)  #top left
+            self.check_tile(source_x, source_y-1, queue)    #left
+            self.check_tile(source_x, source_y+1, queue)    #right
+            self.check_tile(source_x+1, source_y-1, queue)  #bottom right
+            self.check_tile(source_x+1, source_y, queue)    #bottom middle
+            self.check_tile(source_x+1, source_y+1, queue)  #bottom left
 
     def gameover(self):
-        for x in range(0, 10):
-            for y in range (0, 10):
+        for x in range(0, SIZE_X):
+            for y in range(0, SIZE_Y):
                 if self.buttons[x][y]["isMine"] == False and self.buttons[x][y]["state"] == STATE_FLAGGED:
                     self.buttons[x][y]["widget"].config(image = self.tiles["wrong"])
                 if self.buttons[x][y]["isMine"] == True and self.buttons[x][y]["state"] != STATE_FLAGGED:
