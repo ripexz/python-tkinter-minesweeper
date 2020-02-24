@@ -1,4 +1,4 @@
-Python Tkinter Minesweeper v0.5.1
+Python Tkinter Minesweeper
 ===========================
 
 Minesweeper game written in Python using Tkinter GUI library.
@@ -17,10 +17,7 @@ Contents:
 
 To Do:
 ----------
-- Fix bugs
-- Clean up duplicate code
 - Have specific number of mines, rather than random
 - Time counter
 - Highscore table
-- Adjustable grid and mine count
-- ...and then some...
+- Adjustable grid and mine count via UI
