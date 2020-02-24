@@ -3,11 +3,6 @@ Python Tkinter Minesweeper
 
 Minesweeper game written in Python using Tkinter GUI library.
 
-Known bugs:
-----------
-- Tiles cleared from nearby "clean" areas if there is only one mine in between
-- Occasionally mine numbers are displayed incorrectly (1 above actual) at the edges
-
 Contents:
 ----------
 
