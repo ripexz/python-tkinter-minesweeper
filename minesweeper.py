@@ -210,6 +210,7 @@ class Minesweeper:
     def victory(self):
         self.reveal()
         tkMessageBox.showinfo("Game Over", "You Win!")
+        global root
         root.destroy()
 
     def update_flags(self):
