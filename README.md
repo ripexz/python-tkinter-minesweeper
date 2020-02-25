@@ -13,6 +13,5 @@ Contents:
 To Do:
 ----------
 - Have specific number of mines, rather than random
-- Time counter
 - Highscore table
 - Adjustable grid and mine count via UI
