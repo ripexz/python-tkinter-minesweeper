@@ -161,13 +161,6 @@ class Minesweeper:
                 pass
         return neighbors
 
-    def isMineAt(self, x, y):
-        try:
-            return self.tiles[x][y]["isMine"]
-        except KeyError:
-            pass
-        return False
-
     def onClickWrapper(self, x, y):
         return lambda Button: self.onClick(self.tiles[x][y])
 
