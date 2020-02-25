@@ -81,7 +81,7 @@ class Minesweeper:
                     isMine = True
                     self.mines += 1
 
-                self.tiles[x][y] = {
+                tile = {
                     "id": id,
                     "isMine": isMine,
                     "state": STATE_DEFAULT,
@@ -93,11 +93,11 @@ class Minesweeper:
                     "mines": 0 # calculated after grid is built
                 }
 
-                self.tiles[x][y]["button"].bind(BTN_CLICK, self.onClickWrapper(x, y))
-                self.tiles[x][y]["button"].bind(BTN_FLAG, self.onRightClickWrapper(x, y))
+                tile["button"].bind(BTN_CLICK, self.onClickWrapper(x, y))
+                tile["button"].bind(BTN_FLAG, self.onRightClickWrapper(x, y))
+                tile["button"].grid( row = x+1, column = y ) # offset by 1 row for timer
 
-                # lay buttons in grid, offset by 1 row for timer
-                self.tiles[x][y]["button"].grid( row = x+1, column = y )
+                self.tiles[x][y] = tile
 
         # loop again to find nearby mines and display number on tile
         for x in range(0, SIZE_X):
@@ -223,21 +223,21 @@ class Minesweeper:
             x = int(parts[0])
             y = int(parts[1])
 
-            for n in self.getNeighbors(x, y):
-                self.clearTile(n["coords"]["x"], n["coords"]["y"], queue)
+            for tile in self.getNeighbors(x, y):
+                self.clearTile(tile, queue)
 
-    def clearTile(self, x, y, queue):
-        try:
-            if self.tiles[x][y]["state"] == STATE_DEFAULT:
-                if self.tiles[x][y]["mines"] == 0:
-                    self.tiles[x][y]["button"].config(image = self.images["clicked"])
-                    queue.append(self.tiles[x][y]["id"])
-                else:
-                    self.tiles[x][y]["button"].config(image = self.images["numbers"][self.tiles[x][y]["mines"]-1])
-                self.tiles[x][y]["state"] = STATE_CLICKED
-                self.clickedCount += 1
-        except KeyError:
-            pass
+    def clearTile(self, tile, queue):
+        if tile["state"] != STATE_DEFAULT:
+            return
+
+        if tile["mines"] == 0:
+            tile["button"].config(image = self.images["clicked"])
+            queue.append(tile["id"])
+        else:
+            tile["button"].config(image = self.images["numbers"][tile["mines"]-1])
+
+        tile["state"] = STATE_CLICKED
+        self.clickedCount += 1
 
 ### END OF CLASSES ###
 
