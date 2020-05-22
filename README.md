@@ -8,12 +8,16 @@ Minesweeper game written in Python using Tkinter GUI library.
 Contents:
 ----------
 
-- */minesweeper.py* - The actual python program
-- */images/* - GIF Images ready for usage with Tkinter
-- */images/original* - Original PNG images made with GraphicsGale
+- The actual python program is available in */minesweeper.py* file
+- GIF Images ready for usage with Tkinter are available in */images/* folder.
+- Original PNG images made with GraphicsGal are available in */images/original* file
 
 To Do:
 ----------
-- Have specific number of mines, rather than random
-- Highscore table
-- Adjustable grid and mine count via UI
+- Have specific number of mines, rather than havig random number of mines.
+- Highscore table.
+- Adjustable grid and mine count via UI.
+
+Contribution:
+-----------
+Contribtion to this repository is always welcome. Kindly read the guidelines before contributing.
