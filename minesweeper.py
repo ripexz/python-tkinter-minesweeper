@@ -49,8 +49,8 @@ class Minesweeper:
             "flags": Label(self.frame, text = "Flags: 0")
         }
         self.labels["time"].grid(row = 0, column = 0, columnspan = SIZE_Y) # top full width
-        self.labels["mines"].grid(row = SIZE_X+1, column = 0, columnspan = SIZE_Y/2) # bottom left
-        self.labels["flags"].grid(row = SIZE_X+1, column = SIZE_Y/2-1, columnspan = SIZE_Y/2) # bottom right
+        self.labels["mines"].grid(row = SIZE_X+1, column = 0, columnspan = int(SIZE_Y/2)) # bottom left
+        self.labels["flags"].grid(row = SIZE_X+1, column = int(SIZE_Y/2)-1, columnspan = int(SIZE_Y/2)) # bottom right
 
         self.restart() # start game
         self.updateTimer() # init timer
