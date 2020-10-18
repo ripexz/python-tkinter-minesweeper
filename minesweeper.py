@@ -1,5 +1,6 @@
 # Python Version 2.7.3
 # File: minesweeper.py
+# an amazing project 
 
 from tkinter import *
 from tkinter import messagebox as tkMessageBox
