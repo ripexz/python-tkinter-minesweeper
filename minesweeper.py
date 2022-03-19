@@ -130,7 +130,9 @@ class Minesweeper:
         if res:
             self.restart()
         else:
-            self.tk.quit()
+            self.tk.destroy() #shut down the window
+            #self.tk.quit()
+            
 
     def updateTimer(self):
         ts = "00:00:00"
