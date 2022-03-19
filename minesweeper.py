@@ -12,6 +12,9 @@ from datetime import time, date, datetime
 SIZE_X = 10
 SIZE_Y = 10
 
+FIXED_MINE_NUMBER = True #if True set a fixed number of mines, rather than a random outcome
+MINES_TO_SET = 9
+
 STATE_DEFAULT = 0
 STATE_CLICKED = 1
 STATE_FLAGGED = 2
@@ -61,6 +64,12 @@ class Minesweeper:
         self.correctFlagCount = 0
         self.clickedCount = 0
         self.startTime = None
+        
+        if FIXED_MINE_NUMBER:
+            #if fixed number, generate random list of mines           
+            #for simplicity generate set of random numbers going up to x*y size
+            #will then compare with mine number, counting across row then row by row
+            mine_list = random.sample(range(SIZE_X*SIZE_Y-1),MINES_TO_SET)
 
         # create buttons
         self.tiles = dict({})
@@ -75,11 +84,19 @@ class Minesweeper:
 
                 # tile image changeable for debug reasons:
                 gfx = self.images["plain"]
-
-                # currently random amount of mines
-                if random.uniform(0.0, 1.0) < 0.1:
-                    isMine = True
-                    self.mines += 1
+                
+                if FIXED_MINE_NUMBER:
+                    #fixed amount of mines
+                    if x*SIZE_X+y in mine_list:
+                        #count which square number we're on and see if in mine list
+                        isMine = True
+                        self.mines += 1
+                
+                else:
+                    # currently random amount of mines
+                    if random.uniform(0.0, 1.0) < 0.1:
+                        isMine = True
+                        self.mines += 1
 
                 tile = {
                     "id": id,
